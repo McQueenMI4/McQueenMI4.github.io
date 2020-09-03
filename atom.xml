@@ -6,7 +6,7 @@
   <link href="http://yoursite.com/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-08-23T08:44:38.514Z</updated>
+  <updated>2020-09-03T11:35:22.768Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -17,18 +17,22 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Hello World</title>
-    <link href="http://yoursite.com/2020/08/23/hello-world/"/>
-    <id>http://yoursite.com/2020/08/23/hello-world/</id>
-    <published>2020-08-23T08:44:38.513Z</published>
-    <updated>2020-08-23T08:44:38.514Z</updated>
+    <title></title>
+    <link href="http://yoursite.com/2020/09/03/VPS%E9%85%8D%E7%BD%AE/"/>
+    <id>http://yoursite.com/2020/09/03/VPS%E9%85%8D%E7%BD%AE/</id>
+    <published>2020-09-03T11:09:57.021Z</published>
+    <updated>2020-09-03T11:35:22.768Z</updated>
     
-    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
+    <content type="html"><![CDATA[<blockquote><p>本文内容适用于 Ubuntu 系统；部分本地操作以在 macOS 下完成为例。</p><p>本文部分命令需要以 root 用户或 sudo 权限执行。</p></blockquote><h1 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h1><h2 id="SSH-安全"><a href="#SSH-安全" class="headerlink" title="SSH 安全"></a>SSH 安全</h2><p>为了避免自己的 VPS 被 ssh 弱口令扫描，我们不妨使用公私钥对进行 ssh 登录，并关闭密码登录。</p><h3 id="生成并添加密钥"><a href="#生成并添加密钥" class="headerlink" title="生成并添加密钥"></a>生成并添加密钥</h3><ol><li>在macOS本地生成密钥,在本机 Terminal 中执行：</li></ol><p><code>ssh-keygen -t ed25519  # ED25519 算法，长度固定为 256 bits，安全性和性能最佳，兼容性稍差</code></p><p><code>ssh-keygen -t rsa -b 2048  # RSA 算法，指定密钥长度为 2048 bits，兼容性最佳</code></p><p>提示<code>Enter file in which to save the key (/Users/~/.ssh/id_ed25519):</code></p><p>#使用默认文件位置，直接回车即可</p><p>提示<code>Enter passphrase (empty for no passphrase):</code></p><p>#设置私钥的密码（留空即为免密码）</p><p><code>Enter same passphrase again:</code></p><p>#再次输入私钥的密码</p><p>此时就已经在 <code>~/.ssh/ </code>下生成了<code>id_ed25519 (或 id_rsa)</code>(私钥) 和 <code>id_ed25519.pub (或 id_rsa.pub)</code> (公钥) 两个文件。</p><ol start="2"><li>在服务器端添加公钥</li></ol><p>使用 scp 命令将公钥上传到服务器：</p><p><code>scp ~/.ssh/id_ed25519.pub root@&lt;VPS域名或IP&gt;:/root/</code></p><p>#输入 ssh 密码并回车确认</p><p>ssh 到服务器上，随后执行</p><p><code>mkdir ~/.ssh &amp;&amp; chmod 700 ~/.ssh</code></p><p><code>mv id_ed25519.pub ~/.ssh &amp;&amp; cd ~/.ssh</code></p><p><code>mv id_ed25519.pub authorized_keys &amp;&amp; chmod 600 authorized_keys</code></p><p>此时就可以使用密钥进行 ssh 登录了。</p><ol start="3"><li>macOS 本地配置</li></ol><p>如果不想每次使用密钥登录时都要输入密码，那么你可以编辑 ssh 配置文件将密码存储到钥匙串：</p><p>编辑 ssh 配置文件：<code>vim ~/.ssh/config1</code></p><p>写入如下内容：</p><p><code>Host *   AddKeysToAgent yes  # 用 ssh-agent 管理密钥   UseKeychain yes  # 将密码存储到钥匙串中   IdentityFile ~/.ssh/id_ed25519  # 指定私钥路径</code></p><p>  如果你想通过代理 ssh 到你的服务器，那么再写入如下内容：</p><p><code>Host &lt;VPS域名或IP&gt;</code></p><p><code>ProxyCommand nc-X5 -x127.0.0.1:6153 %h %p</code></p><p><code>#nc, netcat #X 5, 指定使用 SOCKS5 代理 #-x, 指定代理的主机地址和端口，示例中为本机的 6153 端口 #%h %p, 用于替换 ssh 实际连接的主机地址和端口</code></p>]]></content>
     
     
       
       
-    <summary type="html">&lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.io/docs/&quot;&gt;documentation&lt;/a&gt; for</summary>
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;本文内容适用于 Ubuntu 系统；部分本地操作以在 macOS 下完成为例。&lt;/p&gt;
+&lt;p&gt;本文部分命令需要以 root 用户或 sudo 权限执行。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;安全&quot;&gt;&lt;a href=&quot;#安全&quot; cla</summary>
       
     
     
